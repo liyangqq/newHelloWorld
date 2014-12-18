@@ -37,6 +37,7 @@ function Init(){
   
         //add Gyro Monitor
         //addGyroMonitor();
+  
  }
 
  function animate() 
