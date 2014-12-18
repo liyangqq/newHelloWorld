@@ -1,7 +1,8 @@
  var windowWidth = window.innerWidth, windowHeight = window.innerHeight;
  var camera,renderer,scene;
+var helloWorld;
  window.onload = function (){
-    console.log("onload");
+    helloWorld = new THREE.Object3D();
     Init();
     animate();
  };
@@ -54,9 +55,59 @@ function Init(){
  }
 
 function addObjectsToScene(){
-    //Add your objects here
-    var graph = new THREE.Mesh(new THREE.SphereGeometry(8, 30, 10), new   THREE.MeshLambertMaterial({color:0xffffff}));
-	  scene.add(graph);
+     // background Plane
+    var planeTexture = new THREE.ImageUtils.loadTexture('resource/brickwall_900x600_small.jpg');
+    planeTexture.wrapS = planeTexture.wrapT = THREE.RepeatWrapping;
+    planeTexture.repeat.set(1, 1);
+    var planeMaterial = new THREE.MeshPhongMaterial({
+        map: planeTexture,
+        color: 0xffdd99
+    });
+    var planeGeometry = new THREE.PlaneGeometry(80, 60, 10, 10);
+    plane = new THREE.Mesh(planeGeometry, planeMaterial);
+    plane.position.z = -6;
+    plane.castShadow = false;
+    plane.receiveShadow = true;
+    scene.add(plane);
+
+    // hello world text
+    var helloWorldGeometry = new THREE.TextGeometry(
+        "Hello World", {
+            size: 9,
+            height: 2,
+            curveSegments: 4,
+            font: "helvetiker",
+            weight: "normal",
+            style: "normal",
+            bevelThickness: 0.5,
+            bevelSize: 0.25,
+            bevelEnabled: true,
+            material: 0,
+            extrudeMaterial: 1
+        }
+    ); 
+    helloWorldGeometry.computeBoundingBox();
+    var hwbb = helloWorldGeometry.boundingBox;
+    var hwbbx = -0.5 * (hwbb.max.x - hwbb.min.x);
+    var hwbby = -0.5 * (hwbb.max.y - hwbb.min.y);
+    var hwbbz = -0.5 * (hwbb.max.z - hwbb.min.z);
+    var helloWorldMaterial = new THREE.MeshFaceMaterial(
+        [
+            new THREE.MeshPhongMaterial({
+                color: 0xffffff,
+                shading: THREE.FlatShading
+            }), // front
+            new THREE.MeshPhongMaterial({
+                color: 0xffffff,
+                shading: THREE.SmoothShading
+            }) // side
+        ]
+    );
+    var helloWorldMesh = new THREE.Mesh(helloWorldGeometry, helloWorldMaterial);
+    helloWorldMesh.castShadow = true;
+    helloWorldMesh.position.set(hwbbx, hwbby, hwbbz);
+    helloWorld.add(helloWorldMesh);
+    scene.add(helloWorld);
 }
 
 function addLights(){
